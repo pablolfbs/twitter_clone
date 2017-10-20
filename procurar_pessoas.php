@@ -6,6 +6,41 @@ if (!isset($_SESSION['usuario'])) {
 	header('Location: index.php?erro=1');
 }
 
+require_once('db.class.php');
+
+$objDb = new db();
+$link = $objDb->conecta_mysql();
+
+$id_usuario = $_SESSION['id_usuario'];
+
+$sql = " SELECT COUNT(*) AS qtd_tweets FROM tweet WHERE id_usuario = $id_usuario ";
+
+$resultado_id = mysqli_query($link, $sql);
+
+$qtd_tweets = 0;
+
+if ($resultado_id) {
+	$registro = mysqli_fetch_array($resultado_id, MYSQLI_ASSOC);
+	$qtd_tweets = $registro['qtd_tweets'];
+
+} else {
+	echo 'Erro ao executar a query';
+}
+
+$sql = " SELECT COUNT(*) AS qtd_seguidores FROM usuarios_seguidores WHERE seguindo_id_usuario = $id_usuario ";
+
+$resultado_id = mysqli_query($link, $sql);
+
+$qtd_seguidores = 0;
+
+if ($resultado_id) {
+	$registro = mysqli_fetch_array($resultado_id, MYSQLI_ASSOC);
+	$qtd_seguidores = $registro['qtd_seguidores'];
+
+} else {
+	echo 'Erro ao executar a query';
+}
+
 ?>
 
 <!DOCTYPE HTML>
@@ -101,10 +136,10 @@ if (!isset($_SESSION['usuario'])) {
 					<h4><?= $_SESSION['usuario'] ?></h4>
 					<hr>
 					<div class="col-md-6">
-						TWEETS <br> 1
+						TWEETS <br> <?= $qtd_tweets ?>
 					</div>
 					<div class="col-md-6">
-						SEGUIDORES <br> 1
+						SEGUIDORES <br> <?= $qtd_seguidores ?>
 					</div>
 				</div>
 			</div>
